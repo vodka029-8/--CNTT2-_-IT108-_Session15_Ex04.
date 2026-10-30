@@ -1,0 +1,37 @@
+
+I. Giải pháp kỹ thuật: Thiết lập tính năng Files On-Demand
+
+Tính năng Files On-Demand (hoặc Free up space trên OneDrive / Google Drive Desktop) cho phép người dùng nhìn thấy toàn bộ cấu trúc cây thư mục và file trên Cloud từ File Explorer của máy tính mà không cần phải thực sự tải nội dung file đó về ổ cứng.
+Các bước thiết lập và vận hành chi tiết:
+• Bước 1: Kích hoạt tính năng trên phần mềm đồng bộ Cloud
+	• Đối với OneDrive: Mở Settings → Vào mục Sync and backup → Chọn Advanced settings → Tại mục Files On-Demand, nhấn chọn Free up disk space (Giải phóng dung lượng đĩa).
+	• Đối với Google Drive Desktop: Mở Settings → Tại mục Google Drive streaming options, chọn chế độ Stream files thay vì Mirror files. Chế độ này sẽ chỉ lưu trữ các tệp ảo (virtual files) trên máy cục bộ.
+• Bước 2: Quản lý trạng thái file trên máy tính cục bộ
+	• Mở thư mục dự án chứa video trong File Explorer. Toàn bộ các file video sẽ hiển thị trạng thái bằng các biểu tượng đặc trưng:
+		• Biểu tượng Đám mây (Cloud icon): File chỉ tồn tại trên Cloud, chiếm 0 bytes dung lượng ổ SSD của máy tính.
+		• Biểu tượng Tích xanh nền trắng (Green check): File sẽ được tải về tạm thời khi bạn click đúp chuột vào để xem/chỉnh sửa. Sau khi đóng file, hệ thống sẽ giữ lại trên máy một thời gian ngắn.
+	• Để giải phóng dung lượng sau khi xử lý xong video, Designer chỉ cần click chuột phải vào file hoặc thư mục video đó và chọn Free up space. File sẽ ngay lập tức được "thu hồi" phần ruột dữ liệu và trở lại trạng thái đám mây (0 bytes trên SSD).
+
+II. Giải bẫy dữ liệu: Chống nghẽn mạng và bảo toàn dữ liệu khi gập máy
+
+Dữ liệu video giám sát campus có dung lượng rất lớn. Để tải lên và xử lý mượt mà, hệ thống cần được cấu hình theo các cơ chế phòng vệ sau:
+• Chống nghẽn mạng (QoS & Network Bandwidth Throttling):
+	• Vào phần cài đặt Mạng (Network/Bandwidth) của ứng dụng Cloud Desktop.
+	• Thay vì chọn "Don't limit", hãy giới hạn tốc độ Upload tối đa (ví dụ: Giới hạn ở mức 5 MB/s hoặc 40 Mbps). Thiết lập này giúp phần mềm không chiếm dụng toàn bộ băng thông của đường truyền Internet, tránh gây nghẽn mạng hoặc treo mạng diện rộng của khu nhà trọ.
+• Bảo toàn dữ liệu khi gập máy (Sleep Prevention & Block-Level Resume):
+	• Khi gập màn hình laptop, Windows sẽ tự động chuyển sang chế độ ngủ (Sleep), làm ngắt kết nối mạng và đứt quãng quá trình upload dữ liệu.
+	• Giải pháp: Trước khi cắm máy treo tải video qua đêm, Designer cần vào Power & sleep settings trên Windows → Tại mục When plugged in, turn off after và When plugged in, PC goes to sleep after, chọn đổi tất cả thành Never (Không bao giờ ngủ).
+	• Cơ chế Resume Upload: Các ứng dụng đám mây hiện đại sử dụng cơ chế chia nhỏ file thành các Block dữ liệu và gắn mã Hash định danh. Nếu máy tính vô tình bị mất điện hoặc sập nguồn giữa chừng, ngay khi bật máy lại, phần mềm sẽ tự động quét các Block đã tải thành công và tiếp tục đẩy tiếp phần dữ liệu còn lại (Resume) mà không phải upload lại từ đầu, đảm bảo tệp video không bị lỗi cấu trúc (corrupted).
+
+III. Báo cáo dung lượng: Tính toán chứng minh hiệu quả giải pháp
+
+Bảng toán học dưới đây chứng minh tính khả thi và hiệu quả của giải pháp khi Dung lượng Cloud lớn hơn dung lượng ổ cứng Local SSD thực tế:
+
+Thành phần dữ liệu	Trạng thái vật lý	Dung lượng danh nghĩa (Virtual Size)	Dung lượng thực tế chiếm dụng trên SSD (Size on disk)
+Tổng kho dữ liệu video giám sát	Lưu trữ tập trung trên Cloud	500 GB	0 GB
+Thư mục ảo hiển thị trên File Explorer	Metadata của cây thư mục (Tên file, ngày tạo, dung lượng)	500 GB	~ 150 MB (Chỉ chứa thông tin text đại diện)
+Video đang thực sự xử lý (Ví dụ: 3 file)	Tải về tạm thời khi click mở (On-Demand)	15 GB	15 GB
+Dung lượng SSD trống còn lại (Ổ 256GB)	Sẵn sàng cho hệ điều hành và phần mềm	-	240.85 GB (Hoàn toàn an toàn, không bị tràn ổ cứng)
+
+Kết luận chứng minh:
+Nhờ tính năng Files On-Demand, hệ thống đã nén gọn 500 GB dữ liệu video danh nghĩa xuống chỉ còn khoảng 15 GB dung lượng thực tế chiếm dụng trên đĩa tại một thời điểm làm việc. Phương án này hoàn toàn đập tan giới hạn vật lý của ổ cứng cục bộ 256GB, giúp phần mềm đồng bộ vận hành mượt mà, liên tục và loại bỏ hoàn toàn rủi ro treo hệ thống do tràn bộ nhớ (SSD Full).
